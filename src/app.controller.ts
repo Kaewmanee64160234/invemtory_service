@@ -1,10 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Ctx, MessagePattern, RmqContext } from '@nestjs/microservices';
+import { ClientProxy, Ctx, MessagePattern, RmqContext } from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService,
+    @Inject('ORDER_SERVICE') private client: ClientProxy,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -23,9 +25,13 @@ export class AppController {
     if (instock) {
       channel.ack(originalMsg);
       console.log('Order created', data);
+      // complete the order
+    this.client.emit('order_completed', data);
     } else {
       channel.ack(originalMsg);
       console.log('Order created  but not in stock', data);
+      // cancel the order
+      this.client.emit('order_cancelled', data);
     }
   }
 }
