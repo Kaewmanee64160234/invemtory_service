@@ -13,7 +13,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           urls: ['amqp://localhost:5672'],
           queue: 'order_queue',
           queueOptions: {
-            durable: false,
+            durable: true,
           },
         },
       },

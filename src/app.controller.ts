@@ -1,6 +1,6 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ClientProxy, Ctx, MessagePattern, RmqContext } from '@nestjs/microservices';
+import { ClientProxy, Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
@@ -13,7 +13,7 @@ export class AppController {
     return this.appService.getHello();
   }
   @MessagePattern('order_created')
-  async handleOrderCreated(data: any,@Ctx() context: RmqContext) {
+  async handleOrderCreated(@Payload() data: any,@Ctx() context: RmqContext) {
    
     // console.log('Order created', data);
     // console.log('context', context);
